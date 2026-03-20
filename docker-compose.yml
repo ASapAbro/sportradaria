@@ -1,7 +1,7 @@
 services:
   mongo:
     image: mongo:7
-    container_name: sportradaria_mongo
+    container_name: babayarga_mongo
     ports:
       - "27017:27017"
     volumes:
