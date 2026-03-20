@@ -10,6 +10,8 @@ const authRoutes = require('./routes/auth')
 const weatherRoutes = require('./routes/weather')
 const activitiesRoutes = require('./routes/activities')
 const usersRoutes = require('./routes/users')
+const subscriptionsRoutes = require('./routes/subscriptions')
+const enterpriseRoutes = require('./routes/enterprise')
 
 connectDB()
 
@@ -31,10 +33,11 @@ app.use(cors({
   origin: process.env.CLIENT_URL,
   credentials: true,
 }))
+app.use('/api/subscriptions/webhook', express.raw({ type: 'application/json' }))
 app.use(express.json())
 app.use(cookieParser())
 app.use(morgan('dev'))
-
+app.use('/api/subscriptions', subscriptionsRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/weather', weatherRoutes)
 app.use('/api/activities', activitiesRoutes)

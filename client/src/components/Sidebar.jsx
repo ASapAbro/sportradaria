@@ -8,6 +8,8 @@ const links = [
   { to: '/planning', label: 'Mon planning', icon: '📅' },
   { to: '/profile', label: 'Mon profil', icon: '👤' },
   { to: '/badges', label: 'Mes badges', icon: '🏅' },
+  { to: '/pricing', label: 'Nos offres', icon: '💎' },
+  { to: '/enterprise', label: 'Espace RH', icon: '🏢' },
 ]
 
 export default function Sidebar() {

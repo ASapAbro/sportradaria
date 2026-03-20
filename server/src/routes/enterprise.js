@@ -1,0 +1,48 @@
+const express = require('express')
+const router = express.Router()
+const User = require('../models/User')
+const Activity = require('../models/Activity')
+const authGuard = require('../middlewares/authGuard')
+
+const enterpriseGuard = async (req, res, next) => {
+  if (req.user.plan !== 'entreprise') {
+    return res.status(403).json({ message: 'Accès réservé aux comptes Entreprise' })
+  }
+  next()
+}
+
+router.get('/dashboard', authGuard, enterpriseGuard, async (req, res) => {
+  try {
+    const employees = await User.find({
+      'company.name': req.user.company.name,
+    }).select('username email sports stats badges createdAt')
+
+    const totalActivities = employees.reduce((sum, e) => sum + e.stats.activitiesCompleted, 0)
+    const avgActivities = employees.length ? Math.round(totalActivities / employees.length) : 0
+
+    res.json({
+      employees,
+      stats: { totalEmployees: employees.length, totalActivities, avgActivities },
+    })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+})
+
+router.post('/challenge', authGuard, enterpriseGuard, async (req, res) => {
+  try {
+    const { title, sport, description, date, location } = req.body
+    const activity = await Activity.create({
+      title, sport, description, location, date,
+      maxParticipants: 100, price: 0, level: 'débutant',
+      author: req.user._id, participants: [req.user._id],
+    })
+    const io = req.app.get('io')
+    io.emit('enterprise_challenge', { title: activity.title, company: req.user.company.name })
+    res.status(201).json({ activity })
+  } catch (error) {
+    res.status(400).json({ message: error.message })
+  }
+})
+
+module.exports = router

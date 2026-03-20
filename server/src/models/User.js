@@ -58,6 +58,20 @@ const userSchema = new mongoose.Schema(
       consecutiveDays: { type: Number, default: 0 },
       totalHours: { type: Number, default: 0 },
     },
+    plan: {
+        type: String,
+        enum: ['gratuit', 'premium', 'entreprise'],
+        default: 'gratuit',
+    },
+    stripeCustomerId: {
+        type: String,
+        default: '',
+    },
+    company: {
+      name: { type: String, default: '' },
+      size: { type: Number, default: 0 },
+      employees: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    },
   },
   { timestamps: true }
 )

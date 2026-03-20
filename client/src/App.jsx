@@ -9,6 +9,8 @@ import Planning from './pages/Planning'
 import Badges from './pages/Badges'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
+import Pricing from './pages/Pricing'
+import Enterprise from './pages/Enterprise'
 
 export default function App() {
   const { loading } = useAuth()
@@ -32,6 +34,8 @@ export default function App() {
         <Route path="/planning" element={<ProtectedRoute><Layout><Planning /></Layout></ProtectedRoute>} />
         <Route path="/badges" element={<ProtectedRoute><Layout><Badges /></Layout></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/pricing" element={<ProtectedRoute><Layout><Pricing /></Layout></ProtectedRoute>} />
+        <Route path="/enterprise" element={<ProtectedRoute><Layout><Enterprise /></Layout></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   )
