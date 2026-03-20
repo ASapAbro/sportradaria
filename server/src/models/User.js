@@ -30,22 +30,47 @@ const userSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
+    level: {
+      type: String,
+      enum: ['débutant', 'intermédiaire', 'avancé'],
+      default: 'débutant',
+    },
+    objectives: {
+      type: String,
+      default: '',
+    },
+    favorites: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Activity',
+      },
+    ],
+    badges: [
+      {
+        name: String,
+        description: String,
+        icon: String,
+        unlockedAt: { type: Date, default: Date.now },
+      },
+    ],
+    stats: {
+      activitiesCompleted: { type: Number, default: 0 },
+      consecutiveDays: { type: Number, default: 0 },
+      totalHours: { type: Number, default: 0 },
+    },
   },
   { timestamps: true }
 )
 
-// Hash le mot de passe avant chaque save
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) return
   this.password = await bcrypt.hash(this.password, 12)
 })
 
-// Méthode pour comparer un mot de passe entrant avec le hash
 userSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password)
 }
 
-// Ne jamais retourner le mot de passe dans les réponses JSON
 userSchema.methods.toJSON = function () {
   const obj = this.toObject()
   delete obj.password
