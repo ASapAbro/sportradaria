@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useAuth } from '../contexts/AuthContext'
 import axios from '../api/axios'
 
 const ALL_BADGES = [
@@ -10,14 +11,18 @@ const ALL_BADGES = [
 ]
 
 export default function Badges() {
+  const { accessToken } = useAuth()
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    axios.get('/users/me/profile')
+    if (!accessToken) return
+    axios.get('/users/me/profile', {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    })
       .then(({ data }) => setUser(data.user))
       .finally(() => setLoading(false))
-  }, [])
+  }, [accessToken])
 
   const unlockedNames = user?.badges?.map(b => b.name) || []
 

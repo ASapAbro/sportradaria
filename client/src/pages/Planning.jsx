@@ -1,15 +1,20 @@
 import { useEffect, useState } from 'react'
+import { useAuth } from '../contexts/AuthContext'
 import axios from '../api/axios'
 
 export default function Planning() {
+  const { accessToken } = useAuth()
   const [activities, setActivities] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    axios.get('/users/me/planning')
+    if (!accessToken) return
+    axios.get('/users/me/planning', {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    })
       .then(({ data }) => setActivities(data.activities))
       .finally(() => setLoading(false))
-  }, [])
+  }, [accessToken])
 
   return (
     <div className="p-8 max-w-3xl">
@@ -35,7 +40,9 @@ export default function Planning() {
                     weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit'
                   })}
                 </p>
-                <p className="text-xs text-gray-400 mt-0.5">{activity.location.city} · {activity.participants.length}/{activity.maxParticipants} participants</p>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  {activity.location.city} · {activity.participants.length}/{activity.maxParticipants} participants
+                </p>
               </div>
               <span className="text-xs font-medium bg-gray-100 text-gray-600 px-3 py-1 rounded-full capitalize">
                 {activity.sport}

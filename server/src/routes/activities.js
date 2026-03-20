@@ -48,6 +48,16 @@ router.post('/', authGuard, async (req, res) => {
       author: req.user._id,
       participants: [req.user._id],
     })
+
+    // Notifie tous les clients connectés
+    const io = req.app.get('io')
+    io.emit('new_activity', {
+      title: activity.title,
+      sport: activity.sport,
+      city: activity.location.city,
+      id: activity._id,
+    })
+
     res.status(201).json({ activity })
   } catch (error) {
     res.status(400).json({ message: error.message })
@@ -96,6 +106,15 @@ router.post('/:id/join', authGuard, async (req, res) => {
     user.stats.activitiesCompleted += 1
     await user.save()
     await checkAndUnlockBadges(user)
+
+    // Notifie l'auteur de l'activité
+    const io = req.app.get('io')
+    io.to(`user_${activity.author}`).emit('participant_joined', {
+      activityTitle: activity.title,
+      username: req.user.username,
+      count: activity.participants.length,
+      max: activity.maxParticipants,
+    })
 
     res.json({ activity })
   } catch (error) {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import axios from '../api/axios'
 
@@ -6,7 +6,7 @@ const SPORTS = ['football', 'basketball', 'tennis', 'yoga', 'running', 'cycling'
 const LEVELS = ['débutant', 'intermédiaire', 'avancé']
 
 export default function Profile() {
-  const { user, setUser } = useAuth()
+  const { user, accessToken } = useAuth()
   const [form, setForm] = useState({
     username: user?.username || '',
     sports: user?.sports || [],
@@ -29,8 +29,8 @@ export default function Profile() {
     e.preventDefault()
     setLoading(true)
     try {
-      const { data } = await axios.put('/users/me', form, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
+      await axios.put('/users/me', form, {
+        headers: { Authorization: `Bearer ${accessToken}` },
       })
       setSuccess(true)
       setTimeout(() => setSuccess(false), 3000)
@@ -82,7 +82,7 @@ export default function Profile() {
                 value={form.objectives}
                 onChange={e => setForm({ ...form, objectives: e.target.value })}
                 rows={3}
-                placeholder="Ex : perdre du poids, courir 10km, améliorer ma souplesse..."
+                placeholder="Ex : perdre du poids, courir 10km..."
                 className="border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 resize-none"
               />
             </div>

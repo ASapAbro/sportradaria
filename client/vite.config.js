@@ -7,8 +7,15 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     proxy: {
-      // eslint-disable-next-line no-undef
-      '/api': process.env.VITE_API_URL || 'http://localhost:3017'
-    }
-  }
+      '/api': {
+        target: 'http://server:5000',
+        changeOrigin: true,
+      },
+      '/socket.io': {
+        target: 'http://server:5000',
+        changeOrigin: true,
+        ws: true,
+      },
+    },
+  },
 })

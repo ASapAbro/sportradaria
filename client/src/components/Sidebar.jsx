@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import NotificationBell from './NotificationBell'
 
 const links = [
   { to: '/dashboard', label: 'Tableau de bord', icon: '⊞' },
@@ -14,8 +15,9 @@ export default function Sidebar() {
 
   return (
     <aside className="w-64 min-h-screen bg-white border-r border-gray-100 flex flex-col">
-      <div className="px-6 py-6 border-b border-gray-100">
+      <div className="px-6 py-6 border-b border-gray-100 flex items-center justify-between">
         <span className="text-lg font-bold text-gray-900">SportRadaria</span>
+        <NotificationBell />
       </div>
 
       <nav className="flex-1 px-4 py-6 flex flex-col gap-1">
