@@ -1,5 +1,6 @@
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
+import WeatherWidget from '../components/WeatherWidget'
 
 export default function Dashboard() {
   const { user, logout } = useAuth()
@@ -12,7 +13,6 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-
       <nav className="bg-white border-b border-gray-100 px-6 py-4">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <span className="text-lg font-bold text-gray-900">SportRadaria</span>
@@ -34,30 +34,12 @@ export default function Dashboard() {
             Bonjour, {user.username} 👋
           </h1>
           <p className="text-gray-400 text-sm mt-1">
-            Bienvenue sur SportRadaria
+            Conditions météo actuelles près de vous
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Email</p>
-            <p className="text-sm font-medium text-gray-900">{user.email}</p>
-          </div>
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Membre depuis</p>
-            <p className="text-sm font-medium text-gray-900">
-              {new Date(user.createdAt).toLocaleDateString('fr-FR')}
-            </p>
-          </div>
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Sports favoris</p>
-            <p className="text-sm font-medium text-gray-900">
-              {user.sports.length > 0 ? user.sports.join(', ') : 'Aucun pour l\'instant'}
-            </p>
-          </div>
-        </div>
+        <WeatherWidget />
       </main>
-
     </div>
   )
 }
