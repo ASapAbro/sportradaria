@@ -1,29 +1,36 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './contexts/AuthContext'
 import Login from './pages/Login'
+import Register from './pages/Register'
+import Dashboard from './pages/Dashboard'
+import ProtectedRoute from './components/ProtectedRoute'
 
 export default function App() {
-  const { user, logout, loading } = useAuth()
+  const { loading } = useAuth()
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-400 text-sm">Chargement...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="w-6 h-6 border-2 border-gray-900 border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
 
-  if (!user) return <Login />
-
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center gap-4">
-      <h1 className="text-3xl font-bold text-gray-900">SportRadaria</h1>
-      <p className="text-gray-600">Connecté en tant que {user.username}</p>
-      <button
-        onClick={logout}
-        className="text-sm text-gray-400 hover:text-gray-900 transition-colors"
-      >
-        Se déconnecter
-      </button>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
