@@ -3,6 +3,7 @@ const router = express.Router()
 const Activity = require('../models/Activity')
 const User = require('../models/User')
 const authGuard = require('../middlewares/authGuard')
+const validateActivity = require('../middlewares/validateActivity')
 const { checkAndUnlockBadges } = require('../utils/badges')
 
 router.get('/', async (req, res) => {
@@ -41,7 +42,7 @@ router.get('/:id', async (req, res) => {
   }
 })
 
-router.post('/', authGuard, async (req, res) => {
+router.post('/', authGuard, validateActivity, async (req, res) => {
   try {
     const activity = await Activity.create({
       ...req.body,
@@ -64,7 +65,7 @@ router.post('/', authGuard, async (req, res) => {
   }
 })
 
-router.put('/:id', authGuard, async (req, res) => {
+router.put('/:id', authGuard, validateActivity, async (req, res) => {
   try {
     const activity = await Activity.findById(req.params.id)
     if (!activity) return res.status(404).json({ message: 'Activité introuvable' })

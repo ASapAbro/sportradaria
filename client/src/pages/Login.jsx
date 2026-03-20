@@ -17,7 +17,18 @@ export default function Login() {
       await login(form.email, form.password)
       navigate('/dashboard')
     } catch (err) {
-      setError(err.response?.data?.message || 'Erreur de connexion')
+      const status = err.response?.status
+      const message = err.response?.data?.message
+
+      if (status === 401) {
+        setError('Email ou mot de passe incorrect')
+      } else if (status === 429) {
+        setError('Trop de tentatives, réessayez dans quelques minutes')
+      } else if (!navigator.onLine) {
+        setError('Pas de connexion internet')
+      } else {
+        setError(message || 'Erreur de connexion au serveur')
+      }
     } finally {
       setLoading(false)
     }

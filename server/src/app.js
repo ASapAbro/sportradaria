@@ -12,6 +12,8 @@ const activitiesRoutes = require('./routes/activities')
 const usersRoutes = require('./routes/users')
 const subscriptionsRoutes = require('./routes/subscriptions')
 const enterpriseRoutes = require('./routes/enterprise')
+const commentsRoutes = require('./routes/comments')
+const challengesRoutes = require('./routes/challenges')
 
 connectDB()
 
@@ -42,6 +44,9 @@ app.use('/api/auth', authRoutes)
 app.use('/api/weather', weatherRoutes)
 app.use('/api/activities', activitiesRoutes)
 app.use('/api/users', usersRoutes)
+app.use('/api/enterprise', enterpriseRoutes)
+app.use('/api/comments', commentsRoutes)
+app.use('/api/challenges', challengesRoutes)
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'SportRadaria API is running' })
@@ -61,7 +66,7 @@ io.on('connection', (socket) => {
   })
 })
 
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 5001
 server.listen(PORT, () => {
   console.log(`Serveur démarré sur le port ${PORT}`)
 })

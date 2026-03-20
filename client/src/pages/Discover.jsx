@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import ActivityMap from '../components/ActivityMap'
+import ActivityCard from '../components/ActivityCard'
+import SkeletonCard from '../components/SkeletonCard'
 import useActivities from '../hooks/useActivities'
-
-const SPORTS = ['football', 'basketball', 'tennis', 'yoga', 'running', 'cycling', 'swimming', 'rugby', 'hiking', 'autre']
-const LEVELS = ['débutant', 'intermédiaire', 'avancé']
+import { SPORTS, LEVELS } from '../constants'
 
 export default function Discover() {
   const [filters, setFilters] = useState({})
   const [search, setSearch] = useState('')
-  const { activities, loading } = useActivities(filters)
+  const { activities, loading, refetch } = useActivities(filters)
 
   const setFilter = (key, val) => {
     setFilters(prev => ({ ...prev, [key]: val === prev[key] ? '' : val }))
@@ -100,33 +100,49 @@ export default function Discover() {
       )}
 
       {/* Liste */}
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map(activity => (
-          <div key={activity._id} className="bg-white rounded-2xl p-5 shadow-sm">
-            <div className="flex items-start justify-between mb-3">
-              <span className="text-xs font-medium text-gray-400 uppercase tracking-wide capitalize">
-                {activity.sport}
-              </span>
-              <span className="text-sm font-medium text-gray-900">
-                {activity.price === 0 ? 'Gratuit' : `${activity.price}€`}
-              </span>
+      {loading ? (
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[...Array(6)].map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="mt-12 text-center">
+          <div className="text-6xl mb-4">🏃‍♂️</div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Aucune activité trouvée
+          </h3>
+          <p className="text-gray-400 text-sm mb-6">
+            {Object.values(filters).some(v => v) || search
+              ? 'Essayez de modifier vos filtres'
+              : 'Soyez le premier à créer une activité !'}
+          </p>
+          {(Object.values(filters).some(v => v) || search) && (
+            <button
+              onClick={() => { setFilters({}); setSearch('') }}
+              className="inline-block bg-gray-900 text-white text-sm px-6 py-2.5 rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              Réinitialiser les filtres
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filtered.map((activity, index) => (
+            <div
+              key={activity._id}
+              style={{
+                animation: `fadeIn 0.5s ease-out ${index * 0.05}s both`
+              }}
+            >
+              <ActivityCard 
+                activity={activity} 
+                onUpdate={refetch} 
+              />
             </div>
-            <h3 className="font-semibold text-gray-900 mb-1">{activity.title}</h3>
-            <p className="text-sm text-gray-400 mb-3">{activity.location.city}</p>
-            <p className="text-xs text-gray-400 mb-4">
-              {new Date(activity.date).toLocaleDateString('fr-FR', {
-                weekday: 'long', day: 'numeric', month: 'long'
-              })}
-            </p>
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-400">
-                {activity.participants.length}/{activity.maxParticipants} participants
-              </span>
-              <span className="text-xs text-gray-400 capitalize">{activity.level}</span>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

@@ -8,7 +8,6 @@ export const AuthProvider = ({ children }) => {
   const [accessToken, setAccessToken] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  // Au montage : tente un refresh silencieux
   useEffect(() => {
     const refresh = async () => {
       try {
@@ -19,7 +18,8 @@ export const AuthProvider = ({ children }) => {
         })
         setUser(me.data.user)
       } catch {
-        // Pas de session active, c'est normal
+        setUser(null)
+        setAccessToken(null)
       } finally {
         setLoading(false)
       }
@@ -46,10 +46,10 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-  <AuthContext.Provider value={{ user, setUser, accessToken, loading, login, register, logout }}>
-    {children}
-  </AuthContext.Provider>
-)
+    <AuthContext.Provider value={{ user, setUser, accessToken, loading, login, register, logout }}>
+      {children}
+    </AuthContext.Provider>
+  )
 }
 
 export const useAuth = () => useContext(AuthContext)

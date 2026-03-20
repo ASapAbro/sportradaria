@@ -1,5 +1,5 @@
 import { useAuth } from '../contexts/AuthContext'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import WeatherWidget from '../components/WeatherWidget'
 
 export default function Dashboard() {
@@ -37,7 +37,12 @@ export default function Dashboard() {
             Conditions météo actuelles près de vous
           </p>
         </div>
-        <a href="/discover" className="text-sm text-gray-500 hover:text-gray-900 transition-colors"> Découvrir </a>
+        <Link 
+          to="/discover" 
+          className="text-sm text-gray-500 hover:text-gray-900 transition-colors inline-block mb-6"
+        >
+          Découvrir
+        </Link>
 
         <WeatherWidget />
       </main>

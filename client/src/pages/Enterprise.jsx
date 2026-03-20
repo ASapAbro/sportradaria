@@ -1,23 +1,37 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { useNavigate } from 'react-router-dom'
 import axios from '../api/axios'
 
 export default function Enterprise() {
   const { user, accessToken } = useAuth()
+  const navigate = useNavigate()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (!accessToken || user?.plan !== 'entreprise') {
-      setLoading(false)
-      return
+      // Utiliser un timeout pour éviter le setState synchrone
+      const timer = setTimeout(() => setLoading(false), 0)
+      return () => clearTimeout(timer)
     }
+    
+    let mounted = true
+    
     axios.get('/enterprise/dashboard', {
       headers: { Authorization: `Bearer ${accessToken}` }
     })
-      .then(({ data }) => setData(data))
-      .finally(() => setLoading(false))
-  }, [accessToken])
+      .then(({ data }) => {
+        if (mounted) setData(data)
+      })
+      .finally(() => {
+        if (mounted) setLoading(false)
+      })
+    
+    return () => {
+      mounted = false
+    }
+  }, [accessToken, user?.plan])
 
   if (user?.plan !== 'entreprise') {
     return (
@@ -28,13 +42,12 @@ export default function Enterprise() {
             Cette section est réservée aux comptes Entreprise.
           </p>
           
-            <button
-            onClick={() => window.location.href='/pricing'}
-            className="inline-block bg-gray-900 text-white text-sm px-6 py-2.5 rounded-lg transition-colors"
+          <button
+            onClick={() => navigate('/pricing')}
+            className="inline-block bg-gray-900 text-white text-sm px-6 py-2.5 rounded-lg hover:bg-gray-700 transition-colors"
           >
             Voir les offres
           </button>
-```
         </div>
       </div>
     )

@@ -9,9 +9,9 @@ const useSocket = (onNotification) => {
   useEffect(() => {
     if (!user) return
 
-    socketRef.current = io('/', {
+    socketRef.current = io(import.meta.env.VITE_API_URL || 'http://localhost:5000', {
       withCredentials: true,
-      path: '/socket.io',
+      transports: ['websocket', 'polling'],
     })
 
     socketRef.current.on('connect', () => {
@@ -35,11 +35,13 @@ const useSocket = (onNotification) => {
     })
 
     return () => {
-      socketRef.current?.disconnect()
+      if (socketRef.current) {
+        socketRef.current.off('new_activity')
+        socketRef.current.off('participant_joined')
+        socketRef.current.disconnect()
+      }
     }
-  }, [user])
-
-  return socketRef.current
+  }, [user, onNotification])
 }
 
 export default useSocket
