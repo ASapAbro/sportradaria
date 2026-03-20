@@ -37,6 +37,7 @@ export default function Dashboard() {
             Conditions météo actuelles près de vous
           </p>
         </div>
+        <a href="/discover" className="text-sm text-gray-500 hover:text-gray-900 transition-colors"> Découvrir </a>
 
         <WeatherWidget />
       </main>

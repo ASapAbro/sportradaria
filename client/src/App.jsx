@@ -4,6 +4,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import ProtectedRoute from './components/ProtectedRoute'
+import Discover from './pages/Discover'
 
 export default function App() {
   const { loading } = useAuth()
@@ -29,8 +30,20 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/discover"
+          element={
+            <ProtectedRoute>
+              <Discover />
+            </ProtectedRoute>
+          }
+        />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>
+    
+
+    
   )
 }
+

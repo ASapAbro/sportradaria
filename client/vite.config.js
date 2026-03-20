@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     proxy: {
-      '/api': 'http://server:5000'
+      '/api': process.env.VITE_API_URL || 'http://localhost:3017'
     }
   }
 })
