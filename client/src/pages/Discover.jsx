@@ -4,14 +4,19 @@ import ActivityCard from '../components/ActivityCard'
 import SkeletonCard from '../components/SkeletonCard'
 import useActivities from '../hooks/useActivities'
 import { SPORTS, LEVELS } from '../constants'
+import { useNavigate } from 'react-router-dom'
 
 export default function Discover() {
   const [filters, setFilters] = useState({})
   const [search, setSearch] = useState('')
   const { activities, loading, refetch } = useActivities(filters)
+  const navigate = useNavigate()
 
   const setFilter = (key, val) => {
-    setFilters(prev => ({ ...prev, [key]: val === prev[key] ? '' : val }))
+    setFilters(prev => ({
+      ...prev,
+      [key]: val === prev[key] ? '' : val
+    }))
   }
 
   const filtered = activities.filter(a =>
@@ -21,13 +26,17 @@ export default function Discover() {
   )
 
   return (
-    <div className="p-8">
+    <div className="p-8 relative">
+      
+      {/* HEADER */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-1">Découvrir</h1>
-        <p className="text-gray-400 text-sm">{filtered.length} activité{filtered.length > 1 ? 's' : ''} trouvée{filtered.length > 1 ? 's' : ''}</p>
+        <p className="text-gray-400 text-sm">
+          {filtered.length} activité{filtered.length > 1 ? 's' : ''} trouvée{filtered.length > 1 ? 's' : ''}
+        </p>
       </div>
 
-      {/* Barre de recherche */}
+      {/* SEARCH */}
       <div className="mb-4">
         <input
           type="text"
@@ -38,7 +47,7 @@ export default function Discover() {
         />
       </div>
 
-      {/* Filtres sport */}
+      {/* SPORT FILTERS */}
       <div className="flex flex-wrap gap-2 mb-3">
         {SPORTS.map(sport => (
           <button
@@ -55,7 +64,7 @@ export default function Discover() {
         ))}
       </div>
 
-      {/* Filtres niveau + gratuit */}
+      {/* LEVEL + PRICE */}
       <div className="flex flex-wrap gap-2 mb-6">
         {LEVELS.map(level => (
           <button
@@ -70,6 +79,7 @@ export default function Discover() {
             {level}
           </button>
         ))}
+
         <button
           onClick={() => setFilter('price', 'gratuit')}
           className={`px-4 py-1.5 rounded-full text-sm transition-colors ${
@@ -80,9 +90,13 @@ export default function Discover() {
         >
           Gratuit
         </button>
+
         {(Object.values(filters).some(v => v) || search) && (
           <button
-            onClick={() => { setFilters({}); setSearch('') }}
+            onClick={() => {
+              setFilters({})
+              setSearch('')
+            }}
             className="px-4 py-1.5 rounded-full text-sm text-red-400 border border-red-200 hover:bg-red-50 transition-colors"
           >
             Réinitialiser
@@ -90,7 +104,7 @@ export default function Discover() {
         )}
       </div>
 
-      {/* Carte */}
+      {/* MAP */}
       {loading ? (
         <div className="h-96 bg-white rounded-2xl flex items-center justify-center">
           <p className="text-gray-400 text-sm">Chargement...</p>
@@ -99,7 +113,7 @@ export default function Discover() {
         <ActivityMap activities={filtered} />
       )}
 
-      {/* Liste */}
+      {/* LIST */}
       {loading ? (
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(6)].map((_, i) => (
@@ -117,32 +131,27 @@ export default function Discover() {
               ? 'Essayez de modifier vos filtres'
               : 'Soyez le premier à créer une activité !'}
           </p>
-          {(Object.values(filters).some(v => v) || search) && (
-            <button
-              onClick={() => { setFilters({}); setSearch('') }}
-              className="inline-block bg-gray-900 text-white text-sm px-6 py-2.5 rounded-lg hover:bg-gray-700 transition-colors"
-            >
-              Réinitialiser les filtres
-            </button>
-          )}
         </div>
       ) : (
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((activity, index) => (
-            <div
+          {filtered.map(activity => (
+            <ActivityCard
               key={activity._id}
-              style={{
-                animation: `fadeIn 0.5s ease-out ${index * 0.05}s both`
-              }}
-            >
-              <ActivityCard 
-                activity={activity} 
-                onUpdate={refetch} 
-              />
-            </div>
+              activity={activity}
+              onUpdate={refetch}
+            />
           ))}
         </div>
       )}
+
+      {/* ✅ BOUTON FLOTTANT */}
+      <button
+        onClick={() => navigate('/activities/create')}
+        className="fixed bottom-8 right-8 bg-gray-900 text-white rounded-full w-14 h-14 text-2xl shadow-lg hover:bg-gray-700 transition-colors flex items-center justify-center z-50"
+      >
+        +
+      </button>
+
     </div>
   )
 }

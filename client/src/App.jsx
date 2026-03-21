@@ -14,6 +14,8 @@ import Pricing from './pages/Pricing'
 import Enterprise from './pages/Enterprise'
 import Community from './pages/Community'
 import Challenges from './pages/Challenges'
+import ActivityDetail from './pages/ActivityDetail'
+import CreateActivity from './pages/CreateActivity'
 
 export default function App() {
   const { loading } = useAuth()
@@ -47,6 +49,8 @@ export default function App() {
           <Route path="/enterprise" element={<ProtectedRoute><Layout><Enterprise /></Layout></ProtectedRoute>} />
           <Route path="/community" element={<ProtectedRoute><Layout><Community /></Layout></ProtectedRoute>} />
           <Route path="/challenges" element={<ProtectedRoute><Layout><Challenges /></Layout></ProtectedRoute>} />
+          <Route path="/activities/:id" element={<ProtectedRoute><Layout><ActivityDetail /></Layout></ProtectedRoute>} />
+          <Route path="/activities/create" element={ <ProtectedRoute><Layout><CreateActivity /></Layout></ProtectedRoute> } />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </ToastProvider>

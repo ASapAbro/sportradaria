@@ -136,5 +136,57 @@ router.post('/:id/leave', authGuard, async (req, res) => {
     res.status(500).json({ message: error.message })
   }
 })
+// PATCH /api/activities/:id/status — changer le statut (auteur uniquement)
+router.patch('/:id/status', authGuard, async (req, res) => {
+  try {
+    const activity = await Activity.findById(req.params.id)
+      .populate('participants')
+
+    if (!activity) return res.status(404).json({ message: 'Activité introuvable' })
+    if (activity.author.toString() !== req.user._id.toString())
+      return res.status(403).json({ message: 'Non autorisé' })
+
+    const { status } = req.body
+    activity.status = status
+    await activity.save()
+
+    // Si l'activité est terminée, met à jour les stats de chaque participant
+    if (status === 'terminée') {
+      for (const participant of activity.participants) {
+        const user = await User.findById(participant._id || participant)
+        if (user) {
+          user.stats.activitiesCompleted += 1
+          await user.save()
+          await checkAndUnlockBadges(user)
+        }
+      }
+
+      // Notifie tous les participants
+      const io = req.app.get('io')
+      activity.participants.forEach(p => {
+        io.to(`user_${p._id || p}`).emit('activity_completed', {
+          title: activity.title,
+          message: `L'activité "${activity.title}" est terminée. Vos stats ont été mises à jour !`,
+        })
+      })
+    }
+
+    res.json({ activity })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+})
+
+// GET /api/activities/user/mine — activités créées par l'utilisateur
+router.get('/user/mine', authGuard, async (req, res) => {
+  try {
+    const activities = await Activity.find({ author: req.user._id })
+      .populate('participants', 'username avatar')
+      .sort({ date: -1 })
+    res.json({ activities })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+})
 
 module.exports = router

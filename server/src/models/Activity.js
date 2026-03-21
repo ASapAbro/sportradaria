@@ -30,6 +30,11 @@ const activitySchema = new mongoose.Schema(
       type: Date,
       required: [true, 'La date est requise'],
     },
+    status: {
+      type: String,
+       enum: ['à venir', 'en cours', 'terminée'],
+       default: 'à venir',
+    },
     maxParticipants: {
       type: Number,
       default: 10,

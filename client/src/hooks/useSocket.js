@@ -34,10 +34,19 @@ const useSocket = (onNotification) => {
       })
     })
 
+    socketRef.current.on('activity_completed', (data) => {
+      onNotification({
+        type: 'activity_completed',
+        message: data.message,
+        id: Date.now(),
+      })
+    })
+
     return () => {
       if (socketRef.current) {
         socketRef.current.off('new_activity')
         socketRef.current.off('participant_joined')
+        socketRef.current.off('activity_completed')
         socketRef.current.disconnect()
       }
     }
